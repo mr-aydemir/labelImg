@@ -93,9 +93,9 @@ class YoloReader:
             self.class_list_path = class_list_path
 
         # print (file_path, self.class_list_path)
-
-        classes_file = open(self.class_list_path, 'r')
-        self.classes = classes_file.read().strip('\n').split('\n')
+        if os.path.exists(self.class_list_path):
+            classes_file = open(self.class_list_path, 'r')
+            self.classes = classes_file.read().strip('\n').split('\n')
 
         # print (self.classes)
 

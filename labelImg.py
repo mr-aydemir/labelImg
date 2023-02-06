@@ -76,7 +76,7 @@ class MainWindow(QMainWindow, WindowMixin):
     def __init__(self, default_filename=None, default_prefdef_class_file=None, default_save_dir=None):
         super(MainWindow, self).__init__()
         self.setWindowTitle(__appname__)
-
+        self.default_prefdef_class_file=default_prefdef_class_file
         # Load setting in the main thread
         self.settings = Settings()
         self.settings.load()
@@ -1637,7 +1637,12 @@ class MainWindow(QMainWindow, WindowMixin):
             return
 
         self.set_format(FORMAT_YOLO)
-        t_yolo_parse_reader = YoloReader(txt_path, self.image)
+        dir_path = os.path.dirname(os.path.realpath(txt_path))
+        class_list_path = os.path.join(dir_path, "classes.txt")
+        if not os.path.exists(class_list_path):
+            class_list_path=self.default_prefdef_class_file
+            print("Caution: There is not classes.txt, predefined_classes.txt is using.")
+        t_yolo_parse_reader = YoloReader(txt_path, self.image, class_list_path)
         shapes = t_yolo_parse_reader.get_shapes()
         print(shapes)
         self.load_labels(shapes)
