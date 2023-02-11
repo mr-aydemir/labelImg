@@ -81,7 +81,6 @@ class MainWindow(QMainWindow, WindowMixin):
         self.settings = Settings()
         self.settings.load()
         settings = self.settings
-
         self.os_name = platform.system()
 
         # Load string bundle for i18n
@@ -926,7 +925,8 @@ class MainWindow(QMainWindow, WindowMixin):
         text = self.combo_box.cb.itemText(index)
         for i in range(self.label_list.count()):
             if text == "":
-                self.label_list.item(i).setCheckState(2)
+                # on hide labels, after add box all show problem fix
+                self.label_list.item(i).setCheckState(self.label_list.item(i).checkState())
             elif text != self.label_list.item(i).text():
                 self.label_list.item(i).setCheckState(0)
             else:
@@ -1305,7 +1305,7 @@ class MainWindow(QMainWindow, WindowMixin):
 
         if dir_path is not None and len(dir_path) > 1:
             self.default_save_dir = dir_path
-            
+        
         if self.file_path is not None and len(self.file_path)>1:
             self.show_bounding_box_from_annotation_file(str(self.file_path))
 

@@ -10,3 +10,4 @@ kamyon
 diger_kara_araclari
 rayli_tasit
 deniz_tasiti
+bisiklet
