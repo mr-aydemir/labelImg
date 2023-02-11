@@ -119,7 +119,9 @@ class YoloReader:
         self.shapes.append((label, points, None, None, difficult))
 
     def yolo_line_to_shape(self, class_index, x_center, y_center, w, h):
-        label = self.classes[int(class_index)]
+        if len(self.classes)<=int(class_index):
+            label="undefined_"+str(int(class_index)-len(self.classes))
+        else: label = self.classes[int(class_index)]
 
         x_min = max(float(x_center) - float(w) / 2, 0)
         x_max = min(float(x_center) + float(w) / 2, 1)
