@@ -1007,6 +1007,7 @@ class MainWindow(QMainWindow, WindowMixin):
         # Arithmetic on scaling factor often results in float
         # Convert to int to avoid type errors
         self.zoom_widget.setValue(int(value))
+        self.paint_canvas()
 
     def add_zoom(self, increment=10):
         self.set_zoom(self.zoom_widget.value() + increment)
@@ -1221,7 +1222,8 @@ class MainWindow(QMainWindow, WindowMixin):
         assert not self.image.isNull(), "cannot paint null image"
         self.canvas.scale = 0.01 * self.zoom_widget.value()
         self.canvas.overlay_color = self.light_widget.color()
-        self.canvas.label_font_size = int(0.01 * max(self.image.width(), self.image.height()))
+        max_img_sz=max(self.image.width(), self.image.height())
+        self.canvas.label_font_size = max(min(max_img_sz/self.zoom_widget.value(), max_img_sz*25/1920), 5) 
         self.canvas.adjustSize()
         self.canvas.update()
 
