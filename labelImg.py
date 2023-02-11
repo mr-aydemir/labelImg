@@ -453,8 +453,8 @@ class MainWindow(QMainWindow, WindowMixin):
             light_brighten, light, light_darken, light_org)
 
         self.actions.advanced = (
-            open, open_dir, change_save_dir, open_next_image, open_prev_image, save, save_format, None,
-            create_mode, edit_mode, None,
+            open, open_dir, change_save_dir, open_next_image, open_prev_image, verify, save, save_format, None,
+            create_mode, edit_mode, copy, delete, None,
             hide_all, show_all)
 
         self.statusBar().showMessage('%s started.' % __appname__)
@@ -926,7 +926,7 @@ class MainWindow(QMainWindow, WindowMixin):
         for i in range(self.label_list.count()):
             if text == "":
                 # on hide labels, after add box all show problem fix
-                self.label_list.item(i).setCheckState(self.label_list.item(i).checkState())
+                self.label_list.item(i).setCheckState( self.label_list.item(i).checkState())
             elif text != self.label_list.item(i).text():
                 self.label_list.item(i).setCheckState(0)
             else:
@@ -1088,7 +1088,10 @@ class MainWindow(QMainWindow, WindowMixin):
 
     def toggle_polygons(self, value):
         for item, shape in self.items_to_shapes.items():
-            item.setCheckState(Qt.Checked if value else Qt.Unchecked)
+            equal= False
+            if shape:
+                equal=shape==self.canvas.selected_shape
+            item.setCheckState(Qt.Checked if value or equal else Qt.Unchecked)
 
     def load_file(self, file_path=None):
         """Load the specified file, or the last opened file if None."""
@@ -1517,10 +1520,28 @@ class MainWindow(QMainWindow, WindowMixin):
         self.canvas.setEnabled(False)
         self.actions.saveAs.setEnabled(False)
 
+    def delete_annotation_file(self):
+        delete_path = self.file_path
+        if delete_path is not None:
+            basename = os.path.basename(os.path.splitext(self.delete_path)[0])
+            txt_path = os.path.join(self.default_save_dir, basename + TXT_EXT)
+            if os.path.exists(txt_path):
+                os.remove(txt_path)
+            xml_path = os.path.join(self.default_save_dir, basename + XML_EXT)
+            if os.path.exists(xml_path):
+                os.remove(xml_path)
+            txt_path = os.path.join(self.default_save_dir, basename + TXT_EXT)
+            if os.path.exists(txt_path):
+                os.remove(txt_path)
+            json_path = os.path.join(self.default_save_dir, basename + JSON_EXT)
+            if os.path.exists(json_path):
+                os.remove(json_path)
+
     def delete_image(self):
         delete_path = self.file_path
         if delete_path is not None:
             idx = self.cur_img_idx
+            self.delete_annotation_file()
             if os.path.exists(delete_path):
                 os.remove(delete_path)
             self.import_dir_images(self.last_open_dir)
