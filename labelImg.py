@@ -812,17 +812,18 @@ class MainWindow(QMainWindow, WindowMixin):
         self.actions.shapeFillColor.setEnabled(selected)
 
     def add_label(self, shape):
-        shape.paint_label = self.display_label_option.isChecked()
-        item = HashableQListWidgetItem(shape.label)
-        item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-        item.setCheckState(Qt.Checked)
-        item.setBackground(generate_color_by_text(shape.label))
-        self.items_to_shapes[item] = shape
-        self.shapes_to_items[shape] = item
-        self.label_list.addItem(item)
-        for action in self.actions.onShapesPresent:
-            action.setEnabled(True)
-        self.update_combo_box()
+        if shape:
+            shape.paint_label = self.display_label_option.isChecked()
+            item = HashableQListWidgetItem(shape.label)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked)
+            item.setBackground(generate_color_by_text(shape.label))
+            self.items_to_shapes[item] = shape
+            self.shapes_to_items[shape] = item
+            self.label_list.addItem(item)
+            for action in self.actions.onShapesPresent:
+                action.setEnabled(True)
+            self.update_combo_box()
 
     def remove_label(self, shape):
         if shape is None:
@@ -1523,7 +1524,7 @@ class MainWindow(QMainWindow, WindowMixin):
     def delete_annotation_file(self):
         delete_path = self.file_path
         if delete_path is not None:
-            basename = os.path.basename(os.path.splitext(self.delete_path)[0])
+            basename = os.path.basename(os.path.splitext(delete_path)[0])
             txt_path = os.path.join(self.default_save_dir, basename + TXT_EXT)
             if os.path.exists(txt_path):
                 os.remove(txt_path)
