@@ -80,7 +80,7 @@ Python 3 + Qt5
 
 if No module named 'sip' problem occured, you can try:
 
-`` code:: shell
+.. code:: shell
 
    python3 -m pip install --upgrade pip
    python3 -m pip install --upgrade pyqt5
