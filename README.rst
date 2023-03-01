@@ -78,6 +78,12 @@ Python 3 + Qt5
     python3 labelImg.py
     python3 labelImg.py [IMAGE_PATH] [PRE-DEFINED CLASS FILE]
 
+if No module named 'sip' problem occured, you can try:
+`` code:: shell
+   python3 -m pip install --upgrade pip
+   python3 -m pip install --upgrade pyqt5
+   make qt5py3
+
 macOS
 ^^^^^
 
