@@ -3,6 +3,7 @@
 import argparse
 import codecs
 import os.path
+from pathlib import Path
 import platform
 import shutil
 import sys
@@ -1302,9 +1303,10 @@ class MainWindow(QMainWindow, WindowMixin):
     def change_save_dir_dialog(self, _value=False):
         if self.default_save_dir is not None:
             path = ustr(self.default_save_dir)
+        elif self.dir_name is not None: 
+            path = ustr(self.dir_name)
         else:
             path = '.'
-
         dir_path = ustr(QFileDialog.getExistingDirectory(self,
                                                          '%s - Save annotations to the directory' % __appname__, path,  QFileDialog.ShowDirsOnly
                                                          | QFileDialog.DontResolveSymlinks))
@@ -1364,9 +1366,26 @@ class MainWindow(QMainWindow, WindowMixin):
             target_dir_path = ustr(default_open_dir_path)
         self.last_open_dir = target_dir_path
         self.import_dir_images(target_dir_path)
-        self.default_save_dir = target_dir_path
+        self.default_save_dir = self.find_save_dir(target_dir_path)
         if self.file_path:
             self.show_bounding_box_from_annotation_file(file_path=self.file_path)
+    
+    def find_save_dir(self, dir_path:str):
+        suffix_map={LabelFileFormat.PASCAL_VOC: XML_EXT, LabelFileFormat.CREATE_ML: JSON_EXT, LabelFileFormat.YOLO: TXT_EXT}
+        suffix=suffix_map[self.label_file_format]
+        first_image_path=self.m_img_list[0]
+        image_name=Path(first_image_path).name
+        label_name=Path(first_image_path).stem+suffix
+        if os.path.exists(first_image_path.replace(image_name, label_name)):
+            return dir_path
+        parent_folder=str(Path(dir_path).parent)
+        priority_folder_names=["labels", "annotations"]
+        for name in priority_folder_names:
+            folder=os.path.join(parent_folder, name)
+            if os.path.exists(folder):
+                return folder
+        return dir_path
+
 
     def import_dir_images(self, dir_path):
         if not self.may_continue() or not dir_path:
@@ -1374,9 +1393,9 @@ class MainWindow(QMainWindow, WindowMixin):
 
         self.last_open_dir = dir_path
         self.dir_name = dir_path
-        self.file_path = None
         self.file_list_widget.clear()
         self.m_img_list = self.scan_all_images(dir_path)
+        self.file_path = self.m_img_list[0]
         self.img_count = len(self.m_img_list)
         self.open_next_image()
         for imgPath in self.m_img_list:
