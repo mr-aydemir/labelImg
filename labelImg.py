@@ -1224,7 +1224,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.canvas.scale = 0.01 * self.zoom_widget.value()
         self.canvas.overlay_color = self.light_widget.color()
         max_img_sz=max(self.image.width(), self.image.height())
-        self.canvas.label_font_size = max(min(max_img_sz/self.zoom_widget.value(), max_img_sz*25/1920), max_img_sz*5/1920) 
+        self.canvas.label_font_size = max(min(max_img_sz/self.zoom_widget.value(), 25), 5) 
         self.canvas.adjustSize()
         self.canvas.update()
 
@@ -1310,7 +1310,8 @@ class MainWindow(QMainWindow, WindowMixin):
         dir_path = ustr(QFileDialog.getExistingDirectory(self,
                                                          '%s - Save annotations to the directory' % __appname__, path,  QFileDialog.ShowDirsOnly
                                                          | QFileDialog.DontResolveSymlinks))
-
+        if not dir_path:
+            return
         if dir_path is not None and len(dir_path) > 1:
             self.default_save_dir = dir_path
         
@@ -1364,6 +1365,8 @@ class MainWindow(QMainWindow, WindowMixin):
                                                                     QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks))
         else:
             target_dir_path = ustr(default_open_dir_path)
+        if not target_dir_path:
+            return
         self.last_open_dir = target_dir_path
         self.import_dir_images(target_dir_path)
         self.default_save_dir = self.find_save_dir(target_dir_path)
@@ -1397,11 +1400,11 @@ class MainWindow(QMainWindow, WindowMixin):
         self.m_img_list = self.scan_all_images(dir_path)
         self.file_path = self.m_img_list[0]
         self.img_count = len(self.m_img_list)
-        self.open_next_image()
+        self.open_next_image(True)
         for imgPath in self.m_img_list:
             item = QListWidgetItem(imgPath)
             self.file_list_widget.addItem(item)
-
+        self.label_list.clear()
     def verify_image(self, _value=False):
         # Proceeding next image without dialog if having any label
         if self.file_path is not None:
@@ -1465,7 +1468,7 @@ class MainWindow(QMainWindow, WindowMixin):
             return
 
         filename = None
-        if self.file_path is None:
+        if self.file_path is None or _value:
             filename = self.m_img_list[0]
             self.cur_img_idx = 0
         else:
