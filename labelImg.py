@@ -349,7 +349,7 @@ class MainWindow(QMainWindow, WindowMixin):
                          light_darken, light_org)
 
         edit = action(get_str('editLabel'), self.edit_label,
-                      'Ctrl+E', 'edit', get_str('editLabelDetail'),
+                      ['E', 'Ctrl+E'], 'edit', get_str('editLabelDetail'),
                       enabled=False)
         self.edit_button.setDefaultAction(edit)
 
