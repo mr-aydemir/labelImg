@@ -1370,6 +1370,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.last_open_dir = target_dir_path
         self.import_dir_images(target_dir_path)
         self.default_save_dir = self.find_save_dir(target_dir_path)
+        
         if self.file_path:
             self.show_bounding_box_from_annotation_file(file_path=self.file_path)
     
@@ -1656,6 +1657,7 @@ class MainWindow(QMainWindow, WindowMixin):
     def load_predefined_classes(self, predef_classes_file):
         if os.path.exists(predef_classes_file) is True:
             with codecs.open(predef_classes_file, 'r', 'utf8') as f:
+                self.label_hist=None
                 for line in f:
                     line = line.strip()
                     if self.label_hist is None:
@@ -1688,6 +1690,8 @@ class MainWindow(QMainWindow, WindowMixin):
         if not os.path.exists(class_list_path):
             class_list_path=self.default_prefdef_class_file
             print("Caution: There is not classes.txt, predefined_classes.txt is using.")
+        
+        self.load_predefined_classes(class_list_path)
         t_yolo_parse_reader = YoloReader(txt_path, self.image, class_list_path)
         shapes = t_yolo_parse_reader.get_shapes()
         print(shapes)
